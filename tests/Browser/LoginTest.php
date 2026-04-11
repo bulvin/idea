@@ -17,7 +17,7 @@ it('logs in a user', function () {
 });
 
 it('logs out a user', function () {
-    /** @var \App\Models\User $user */
+    /** @var User $user */
     $user = User::factory()->create();
 
     $this->actingAs($user);
