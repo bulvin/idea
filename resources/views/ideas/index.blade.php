@@ -19,7 +19,7 @@
         <div class="mt-10 text-muted-foreground">
             <div class="grid md:grid-cols-2 gap-6">
                 @forelse ($ideas as $idea)
-                    <x-card href="{{ route('idea.show', $idea) }}">
+                    <x-card href="{{ route('ideas.show', $idea) }}">
                         <h3 class="text-foreground text-lg">
                             {{ $idea->title }}
                         </h3>
