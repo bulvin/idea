@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\IdeaStatus;
-use Database\Factories\IdeaFactory;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

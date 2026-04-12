@@ -10,6 +10,7 @@
             is="button"
             type="button"
             class="mt-10 cursor-pointer h-32 w-full text-left"
+            data-test="create-idea-button"
             >
             <p>What's the idea?</p>
         </x-card>
@@ -52,7 +53,37 @@
         </div>
 
         <x-modal name="create-idea" title="New Idea">
-            <form x-data="{ status: 'pending' }" method="POST" action="{{ route('ideas.store') }}">
+            <form
+            x-data="{
+                status: 'pending',
+                newLink: '',
+                links: [],
+                addLink() {
+                    const val = this.newLink.trim();
+                    if (val) {
+                        this.links = [...this.links, val];
+                        this.newLink = '';
+                    }
+                },
+                removeLink(index) {
+                    this.links = this.links.filter((_, i) => i !== index);
+                },
+                newStep: '',
+                steps: [],
+                addStep() {
+                    const val = this.newStep.trim();
+                    if (val) {
+                        this.steps = [...this.steps, val];
+                        this.newStep = '';
+                    }
+                },
+                removeStep(index) {
+                    this.steps = this.steps.filter((_, i) => i !== index);
+                },
+            }"
+             method="POST"
+             action="{{ route('ideas.store') }}"
+            >
                 @csrf
 
                 <div class="space-y-6">
@@ -72,6 +103,7 @@
                                 <button
                                     type="button"
                                     @click="status = @js($status->value)"
+                                    data-test="button-status-{{ $status->value }}"
                                     class="btn flex-1 h-10"
                                     :class="{'btn-outlined': status !== @js($status->value)}">
                                     {{ $status->label() }}
@@ -91,9 +123,93 @@
                         placeholder="Describe your idea"
                         autofocus
                     />
+
+                    <div>
+                        <fieldset class="space-y-3">
+                            <legend class="label">Actionable Steps</legend>
+
+                            <template x-for="(step, index) in steps" :key="step">
+                                <div class="flex gap-x-2 items-center">
+                                    <input class="input" name="steps[]" x-model="step" readonly>
+                                    <button
+                                        type="button"
+                                        @click="removeStep(index)"
+                                        aria-label="Remove link"
+                                        class="form-muted-icon"
+                                    >
+                                        <x-icons.close />
+                                    </button>
+                                </div>
+                            </template>
+
+                            <div class="flex gap-x-2 items-center">
+                                <input
+                                    x-model="newStep"
+                                    id="new-step"
+                                    data-test="new-step"
+                                    placeholder="What needs to be done?"
+                                    class="input flex-1"
+                                    spellcheck="false"
+                                >
+                                <button
+                                    type="button"
+                                    @click="addStep()"
+                                    :disabled="newStep.trim().length === 0"
+                                    aria-label="Add link button"
+                                    class="form-muted-icon"
+                                    data-test='submit-new-step-button'
+                                >
+                                    <x-icons.close class="rotate-45" />
+                                </button>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div>
+                        <fieldset class="space-y-3">
+                            <legend class="label">Links</legend>
+
+                            <template x-for="(link, index) in links" :key="link">
+                                <div class="flex gap-x-2 items-center">
+                                    <input class="input" name="links[]" x-model="link" readonly>
+                                    <button
+                                        type="button"
+                                        @click="removeLink(index)"
+                                        aria-label="Remove link"
+                                        class="form-muted-icon"
+                                    >
+                                        <x-icons.close />
+                                    </button>
+                                </div>
+                            </template>
+
+                            <div class="flex gap-x-2 items-center">
+                                <input
+                                    x-model="newLink"
+                                    type="url"
+                                    id="new-link"
+                                    data-test="new-link"
+                                    placeholder="http://example.com"
+                                    autocomplete="url"
+                                    class="input flex-1"
+                                    spellcheck="false"
+                                >
+                                <button
+                                    type="button"
+                                    @click="addLink()"
+                                    :disabled="newLink.trim().length === 0"
+                                    aria-label="Add link button"
+                                    class="form-muted-icon"
+                                    data-test='submit-new-link-button'
+                                >
+                                    <x-icons.close class="rotate-45" />
+                                </button>
+                            </div>
+                        </fieldset>
+                    </div>
                 </div>
 
-                <div class="flex justify-end gap-x-5 mt-2">
+                <div class="flex justify-end gap-x-5 mt-4">
                     <button type="button" @click="$dispatch('close-modal')">Cancel</button>
                     <button type="submit" class="btn">Create</button>
                 </div>

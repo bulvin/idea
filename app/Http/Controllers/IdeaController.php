@@ -45,9 +45,13 @@ class IdeaController extends Controller
      */
     public function store(StoreIdeaRequest $request)
     {
-        Auth::user()
+        $idea = Auth::user()
             ->ideas()
-            ->create($request->validated());
+            ->create($request->safe()->except('steps'));
+
+        $idea->steps()->createMany(
+            collect($request->steps)->map(fn ($step) => ['description' => $step])
+        );
 
         return to_route('ideas.index')
             ->with('success', 'Idea has been created!');
