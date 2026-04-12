@@ -52,7 +52,52 @@
         </div>
 
         <x-modal name="create-idea" title="New Idea">
-            <p>Content here</p>
+            <form x-data="{ status: 'pending' }" method="POST" action="{{ route('ideas.store') }}">
+                @csrf
+
+                <div class="space-y-6">
+                    <x-forms.field
+                        label="Title"
+                        name="title"
+                        placeholder="Enter an idea's title"
+                        autofocus
+                        required
+                    />
+
+                    <div class="space-y-2">
+                        <label for="status" class="label">Status</label>
+
+                        <div class="flex gap-x-3">
+                            @foreach (App\IdeaStatus::cases() as $status)
+                                <button
+                                    type="button"
+                                    @click="status = @js($status->value)"
+                                    class="btn flex-1 h-10"
+                                    :class="{'btn-outlined': status !== @js($status->value)}">
+                                    {{ $status->label() }}
+                                </button>
+                            @endforeach
+
+                            <input type="hidden" name="status" :value="status" class="input">
+                        </div>
+
+                        <x-forms.error name="status" />
+                    </div>
+
+                    <x-forms.field
+                        label="Description"
+                        name="description"
+                        type="textarea"
+                        placeholder="Describe your idea"
+                        autofocus
+                    />
+                </div>
+
+                <div class="flex justify-end gap-x-5 mt-2">
+                    <button type="button" @click="$dispatch('close-modal')">Cancel</button>
+                    <button type="submit" class="btn">Create</button>
+                </div>
+            </form>
         </x-modal>
 
     </div>

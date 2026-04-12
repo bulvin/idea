@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/ideas');
 
 Route::get('/ideas', [IdeaController::class, 'index'])->name('ideas.index')->middleware('auth');
+Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store')->middleware('auth');
 Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show')->middleware('auth');
 Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('ideas.destroy')->middleware('auth');
 
