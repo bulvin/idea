@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Notifications\EmailChanged;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
     public function edit()
     {
         return view('profile.edit', [
-            'user' => Auth::user()
+            'user' => Auth::user(),
         ]);
     }
 
@@ -26,9 +28,9 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required', 'string', 'email', 'max:255',
-                Rule::unique('users', 'email')->ignore($user->id)
+                Rule::unique('users', 'email')->ignore($user->id),
             ],
-            'password' => ['nullable', Password::defaults()]
+            'password' => ['nullable', Password::defaults()],
         ]);
 
         $originalEmail = $user->email;
@@ -36,7 +38,7 @@ class ProfileController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password ?? $user->password
+            'password' => $request->password ?? $user->password,
         ]);
 
         if ($originalEmail !== $request->email) {
