@@ -20,3 +20,9 @@ test('it can have steps', function () {
 
     expect($idea->fresh()->steps)->toHaveCount(1);
 });
+
+test('it can format description using Markdown', function () {
+    $idea = new Idea(['descritpion' => 'Hello *world*']);
+
+    expect($idea->formattedDescription)->toEqual('<p>Hello <em>world</em></p>\n');
+});
