@@ -55,13 +55,10 @@ class Idea extends Model
     public function formattedDescription(): Attribute
     {
         return Attribute::get(
-            fn (?string $value): HtmlString => new HtmlString(
-                str($value ?? '')->markdown([
-                    'html_input' => 'escape',
-                    'allow_unsafe_links' => false,
-                    'max_nesting_level' => 5,
-                ])
-            )
-        );
+        fn ($value, $attributes) => new HtmlString(str($attributes['description'])->markdown([
+            'html_input' => 'escape',
+            'allow_unsafe_links' => false,
+            'max_nesting_level' => 5,
+        ])));
     }
 }
