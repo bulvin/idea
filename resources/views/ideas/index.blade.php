@@ -4,17 +4,16 @@
             <h1 class="text-3xl font-bold">Ideas</h1>
             <p class="text-muted-foreground text-sm mt-2">Make a plan</p>
 
-        <x-card
-            x-data
-            @click="$dispatch('open-modal', 'create-idea')"
-            is="button"
-            type="button"
-            class="mt-10 cursor-pointer h-32 w-full text-left"
-            data-test="create-idea-button"
+            <x-card
+                x-data
+                @click="$dispatch('open-modal', 'create-idea')"
+                is="button"
+                type="button"
+                class="mt-10 cursor-pointer h-32 w-full text-left"
+                data-test="create-idea-button"
             >
-            <p>What's the idea?</p>
-        </x-card>
-
+                <p>What's the idea?</p>
+            </x-card>
         </header>
 
         <div>
@@ -32,6 +31,11 @@
             <div class="grid md:grid-cols-2 gap-6">
                 @forelse ($ideas as $idea)
                     <x-card href="{{ route('ideas.show', $idea) }}">
+                        @if ($idea->image_path)
+                            <div class="mb-4 -mx-4 -mt-4 rounded-t-lg overflow-hidden">
+                                <img src="{{ asset('storage/' . $idea->image_path) }}" alt="{{ $idea->title }}" class="w-full h-auto object-cover">
+                            </div>
+                         @endif
                         <h3 class="text-foreground text-lg">
                             {{ $idea->title }}
                         </h3>
@@ -58,6 +62,7 @@
                 status: 'pending',
                 newLink: '',
                 links: [],
+                hasImage: false,
                 addLink() {
                     const val = this.newLink.trim();
                     if (val) {
@@ -83,6 +88,7 @@
             }"
              method="POST"
              action="{{ route('ideas.store') }}"
+             x-bind:enctype="hasImage ? 'multipart/form-data : false"
             >
                 @csrf
 
@@ -123,6 +129,17 @@
                         placeholder="Describe your idea"
                         autofocus
                     />
+
+                    <div class="space-y-2">
+                        <label for="image" class="label">Featured image</label>
+                        <input
+                            type="file"
+                            name="image"
+                            accept="image/*"
+                            @change="hasImage = $event.target.files.length > 0"
+                        >
+                        <x-forms.error name="image" />
+                    </div>
 
                     <div>
                         <fieldset class="space-y-3">
