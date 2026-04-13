@@ -1,11 +1,15 @@
 <nav class="border-b border-border ph-6">
     <div class="max-w-7xl mx-auto h-16 flex items-center justify-between">
-        <div>
-           <a href="/" alt="Idea logo">Idea</a>
+        <div class="mt-0">
+
+           <a href="/" alt="Idea logo">
+                <x-icons.logo />
+           </a>
         </div>
 
         <div class="flex gap-x-5">
             @auth
+                <a href="{{ route('profile.edit') }}">Edit Profile</a>
                 <form method="POST" action="/logout">
                     @csrf
 
