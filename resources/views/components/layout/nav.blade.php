@@ -1,5 +1,5 @@
 <nav class="border-b border-border ph-6">
-    <div class="max-w-7xl mx-auto h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 2xl:px-0 h-16 flex items-center justify-between">
         <div class="mt-0">
 
            <a href="/" alt="Idea logo">
