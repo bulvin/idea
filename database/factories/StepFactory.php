@@ -24,6 +24,7 @@ class StepFactory extends Factory
             'idea_id' => Idea::factory()->create(),
             'description' => fake()->sentence(),
             'completed' => false,
+            'completed_at' => null,
         ];
     }
 }

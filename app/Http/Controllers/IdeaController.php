@@ -59,7 +59,7 @@ class IdeaController extends Controller
     public function show(Idea $idea)
     {
         Gate::authorize('workWith', $idea);
-
+        // dd($idea->steps);
         return view('ideas.show', [
             'idea' => $idea,
         ]);

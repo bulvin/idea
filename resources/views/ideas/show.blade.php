@@ -65,7 +65,11 @@
 
                                     <div class="flex items-center gap-x-3">
                                         <button type="submit" role="checkbox" class="size-5 flex items-center justify-center rounded-lg text-primary-foreground {{ $step->completed ? 'bg-primary' : 'border border-primary' }}">&check;</button>
-                                        <span class="{{ $step->completed ? 'line-through text-muted-foreground' : '' }}">{{ $step->description}}</span>
+                                        <span class="{{ $step->completed ? 'line-through text-muted-foreground' : '' }}">{{ $step->description }}</span>
+
+                                        @if ($step->completed_at)
+                                            <span class="ml-auto shrink-0 text-sm text-muted-foreground">{{ $step->completed_at->diffForHumans() }}</span>
+                                        @endif
                                     </div>
                                 </form>
                             </x-card>
