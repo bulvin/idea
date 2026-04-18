@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Step;
-use Illuminate\Support\Carbon;
+use Carbon\CarbonImmutable;
 
 class StepController extends Controller
 {
@@ -18,7 +18,7 @@ class StepController extends Controller
 
         $step->update([
             'completed' => $completed,
-            'completed_at' => $completed ? Carbon::now() : null,
+            'completed_at' => $completed ? CarbonImmutable::now() : null,
         ]);
 
         return back();

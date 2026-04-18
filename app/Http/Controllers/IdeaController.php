@@ -9,9 +9,11 @@ use App\Actions\UpdateIdea;
 use App\Http\Requests\IdeaRequest;
 use App\IdeaStatus;
 use App\Models\Idea;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class IdeaController extends Controller
 {
@@ -59,7 +61,7 @@ class IdeaController extends Controller
     public function show(Idea $idea)
     {
         Gate::authorize('workWith', $idea);
-        // dd($idea->steps);
+
         return view('ideas.show', [
             'idea' => $idea,
         ]);
@@ -95,5 +97,40 @@ class IdeaController extends Controller
         $idea->delete();
 
         return to_route('ideas.index');
+    }
+
+    public function generateShareCode(Idea $idea): RedirectResponse
+    {
+        Gate::authorize('workWith', $idea);
+
+        $maxAttempts = 5;
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            $shareCode = Str::random(11);
+
+            if (Idea::where('share_code', $shareCode)->exists()) {
+                continue;
+            }
+
+            $idea->update([
+                'share_code' => $shareCode,
+                'share_code_expires_at' => now()->addDays(7)
+            ]);
+
+            return back()->with('success', "Public link generated!");
+        }
+
+        return back()->with('error', 'Could not generate a unique share code. Please try again.');
+    }
+
+    public function share(Request $request, Idea $idea)
+    {
+        /**
+         * Given I'm sign in
+         * and generate code (10 length, temporary - expires in 7 days, or when is a generated new one)
+         * when idea is found by share code, then return view with that idea only as readonly for other users - also guests
+         * otherwise notfound,
+         */
+
+
     }
 }

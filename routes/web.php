@@ -24,6 +24,8 @@ Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('ideas.up
 
 Route::delete('/ideas/{idea}/image', [IdeaImageController::class, 'destroy'])->name('ideas.image.destroy')->middleware('auth');
 
+Route::post('/ideas/{idea}/code', [IdeaController::class, 'generateShareCode'])->name('ideas.code.store')->middleware('auth');
+
 Route::patch('/steps/{step}', [StepController::class, 'update'])->name('steps.update')->middleware('auth');
 
 Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest');

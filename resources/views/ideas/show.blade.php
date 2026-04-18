@@ -1,12 +1,49 @@
 <x-layout>
     <div class="py-8 max-w-4xl mx-auto">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center flex-wrap">
             <a href="{{ route('ideas.index') }}" class="flex items-center gap-x-2 text-sm font-medium mb-6">
                 <x-icons.arrow-back/>
                 Back to Ideas
             </a>
 
             <div class="gap-x-3 flex items-center">
+                <form method="POST" action="{{ route('ideas.code.store', $idea) }}">
+                    @csrf
+
+                    <button class="btn btn-outlined">{{ $idea->share_code ? 'Rotate link' : 'Share'}}</button>
+                </form>
+                @if ($idea->share_code)
+                    <div
+                        class="inline-flex max-w-full items-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-2 py-1 font-mono text-sm text-foreground shadow-sm"
+                        x-data="{
+                            code: @js($idea->share_code),
+                            copied: false,
+                            async copy() {
+                                await navigator.clipboard.writeText(this.code);
+                                this.copied = true;
+                                setTimeout(() => ($this.copied = false), 2000);
+                            },
+                        }"
+                    >
+                        <div class="flex min-w-0 flex-1 flex-col gap-1">
+                            <span>{{ $idea->share_code }}</span>
+                            <span class="text-xs {{ $idea->share_code_expires_at->isPast() ? 'text-red-500' : 'text-amber-500'}} ">
+                                Expires: {{ $idea->share_code_expires_at->diffForHumans(now(), Carbon\CarbonInterface::DIFF_ABSOLUTE) }}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-outlined shrink-0 px-2 py-1 text-xs"
+                            @click="copy()"
+                            x-bind:aria-label="copied ? 'Copied' : 'Copy share code'"
+                        >
+                            <span x-show="!copied" x-cloak>Copy</span>
+                            <span x-show="copied" x-cloak class="text-primary">Copied</span>
+                        </button>
+                    </div>
+                @endif
+
                 <button
                     x-data
                     class="btn btn-outlined"
