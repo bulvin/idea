@@ -22,7 +22,7 @@ class Idea extends Model
     protected $casts = [
         'links' => AsArrayObject::class,
         'status' => IdeaStatus::class,
-        'share_code_expires_at' => 'datetime'
+        'share_code_expires_at' => 'datetime',
     ];
 
     protected $attributes = [
@@ -60,7 +60,7 @@ class Idea extends Model
                 'html_input' => 'escape',
                 'allow_unsafe_links' => false,
                 'max_nesting_level' => 5,
-        ])));
+            ])));
     }
 
     public function shareLink(): Attribute
@@ -75,6 +75,7 @@ class Idea extends Model
         if (! $this->share_code) {
             return true;
         }
+
         return $this->share_code_expires_at?->isPast() ?? false;
     }
 }

@@ -8,7 +8,7 @@
         links: @js(old('links', $idea->links ?? [])),
         hasImage: false,
         newStep: '',
-        steps: @js(old('steps', $idea->steps->map->only(['id', 'description', 'completed']))),
+        steps: @js(old('steps', $idea->steps->map->only(['id', 'description', 'completed', 'completed_at']))),
         addLink() {
             const val = this.newLink.trim();
             if (val) {
@@ -22,7 +22,7 @@
         addStep() {
             const description = this.newStep.trim();
             if (description.length > 0) {
-                this.steps = [...this.steps, { description, completed: false }];
+                this.steps = [...this.steps, { description, completed: false, completed_at: '' }];
                 this.newStep = '';
             }
         },
@@ -106,8 +106,10 @@
 
                     <template x-for="(step, index) in steps" :key="step.id || index">
                         <div class="flex gap-x-2 items-center">
+                            <input type="hidden" :name="`steps[${index}][id]`" :value="step.id ?? ''" readonly>
                             <input class="input" :name="`steps[${index}][description]`" x-model="step.description" readonly>
                             <input type="hidden" class="input" :name="`steps[${index}][completed]`" :value="step.completed ? '1' : '0'" readonly>
+                            <input type="hidden" :name="`steps[${index}][completed_at]`" :value="step.completed_at ?? ''" readonly>
                             <button
                                 type="button"
                                 @click="removeStep(index)"

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Actions\ShareIdea;
@@ -12,7 +14,7 @@ class ShareIdeaController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Idea $idea, ShareIdea $action) : RedirectResponse
+    public function __invoke(Idea $idea, ShareIdea $action): RedirectResponse
     {
         Gate::authorize('workWith', $idea);
 

@@ -9,8 +9,10 @@ use Illuminate\Support\Str;
 
 class ShareIdea
 {
-    public  const int CODE_LENGTH  = 11;
-    public  const int EXPIRY_DAYS  = 7;
+    public const int CODE_LENGTH = 11;
+
+    public const int EXPIRY_DAYS = 7;
+
     private const int MAX_ATTEMPTS = 5;
 
     public function share(Idea $idea): bool
