@@ -62,4 +62,19 @@ class Idea extends Model
                 'max_nesting_level' => 5,
         ])));
     }
+
+    public function shareLink(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->share_code
+            ? route('ideas.share.show', ['code' => $this->share_code])
+            : null);
+    }
+
+    public function isShareCodeExpired(): bool
+    {
+        if (! $this->share_code) {
+            return true;
+        }
+        return $this->share_code_expires_at?->isPast() ?? false;
+    }
 }

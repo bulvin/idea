@@ -2,71 +2,88 @@
     <div class="py-8 max-w-4xl mx-auto">
         <div class="flex justify-between items-center flex-wrap">
             <a href="{{ route('ideas.index') }}" class="flex items-center gap-x-2 text-sm font-medium mb-6">
-                <x-icons.arrow-back/>
+                <x-icons.arrow-back />
                 Back to Ideas
             </a>
+            <div class="flex w-full flex-col items-start gap-3 sm:w-auto sm:items-end">
+                <div class="flex flex-wrap items-center gap-3">
+                    <button x-data type="button" class="btn btn-outlined" data-test="edit-idea-button"
+                        @click="$dispatch('open-modal', 'edit-idea')">
+                        <x-icons.external />
+                        Edit Idea
+                    </button>
+                    <form method="POST" action="{{ route('ideas.destroy', $idea) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outlined text-red-500">Delete</button>
+                    </form>
+                    <div x-data="{
+                        link: @js($idea->shareLink),
+                        copied: false,
+                        panelOpen: @js(session('share_panel_open', false)),
+                        async copy() {
+                            await navigator.clipboard.writeText(this.link);
+                            this.copied = true;
+                            setTimeout(() => (this.copied = false), 2000);
+                        },
+                    }" class="relative">
+                        <div class="flex items-center gap-2">
+                            <form method="POST" action="{{ route('ideas.code.store', $idea) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-outlined">
+                                    {{ $idea->share_code ? 'Rotate link' : 'Share' }}
+                                </button>
+                            </form>
 
-            <div class="gap-x-3 flex items-center">
-                <form method="POST" action="{{ route('ideas.code.store', $idea) }}">
-                    @csrf
-
-                    <button class="btn btn-outlined">{{ $idea->share_code ? 'Rotate link' : 'Share'}}</button>
-                </form>
-                @if ($idea->share_code)
-                    <div
-                        class="inline-flex max-w-full items-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-2 py-1 font-mono text-sm text-foreground shadow-sm"
-                        x-data="{
-                            code: @js($idea->share_code),
-                            copied: false,
-                            async copy() {
-                                await navigator.clipboard.writeText(this.code);
-                                this.copied = true;
-                                setTimeout(() => ($this.copied = false), 2000);
-                            },
-                        }"
-                    >
-                        <div class="flex min-w-0 flex-1 flex-col gap-1">
-                            <span>{{ $idea->share_code }}</span>
-                            <span class="text-xs {{ $idea->share_code_expires_at->isPast() ? 'text-red-500' : 'text-amber-500'}} ">
-                                Expires: {{ $idea->share_code_expires_at->diffForHumans(now(), Carbon\CarbonInterface::DIFF_ABSOLUTE) }}
-                            </span>
+                            @if ($idea->share_code)
+                            <button type="button" class="btn btn-outlined w-24" @click="panelOpen = true"
+                                x-show="!panelOpen"
+                                @if(session('share_panel_open')) style="display:none;" @endif>
+                                Show link
+                            </button>
+                            <button type="button" class="btn btn-outlined w-24" @click="panelOpen = false"
+                                x-show="panelOpen"
+                                @if(!session('share_panel_open')) style="display:none;" @endif>
+                                Hide link
+                            </button>
+                        @endif
                         </div>
 
-                        <button
-                            type="button"
-                            class="btn btn-outlined shrink-0 px-2 py-1 text-xs"
-                            @click="copy()"
-                            x-bind:aria-label="copied ? 'Copied' : 'Copy share code'"
-                        >
-                            <span x-show="!copied" x-cloak>Copy</span>
-                            <span x-show="copied" x-cloak class="text-primary">Copied</span>
-                        </button>
+                        @if ($idea->share_code)
+                            <div
+                                x-show="panelOpen"
+                                style="display: none;"
+                                x-transition
+                                class="absolute right-0 top-full z-10 mt-2 w-72 rounded-lg border border-primary/25 bg-background p-2 font-mono text-sm text-foreground shadow-md"
+                            >
+                                <div class="min-w-0">
+                                    <p class="break-all">{{ $idea->shareLink }}</p>
+                                    @if ($idea->share_code_expires_at)
+                                        <p class="mt-1 text-xs {{ $idea->isShareCodeExpired() ? 'text-red-500' : 'text-amber-500' }}">
+                                            Expires: {{ $idea->share_code_expires_at->diffForHumans(now(), Carbon\CarbonInterface::DIFF_ABSOLUTE) }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-outlined px-2 py-1 text-xs"
+                                        @click="copy()"
+                                        x-bind:aria-label="copied ? 'Copied' : 'Copy share link'">
+                                        <span x-show="!copied" x-cloak>Copy</span>
+                                        <span x-show="copied" x-cloak class="text-primary">Copied</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                @endif
-
-                <button
-                    x-data
-                    class="btn btn-outlined"
-                    data-test="edit-idea-button"
-                    @click="$dispatch('open-modal', 'edit-idea')"
-                >
-                    <x-icons.external />
-                    Edit Idea
-                </button>
-
-                <form method="POST" action="{{ route('ideas.destroy', $idea) }}">
-                    @csrf
-                    @method('DELETE')
-
-                    <button class="btn btn-outlined text-red-500">Delete</button>
-                </form>
+                </div>
             </div>
+
         </div>
 
         <div class="mt-8 space-y-6">
             @if ($idea->image_path)
                 <div class="rounded-lg overflow-hidden">
-                    <img src="{{ asset('storage/' .$idea->image_path) }}" class="w-full h-auto object-cover">
+                    <img src="{{ asset('storage/' . $idea->image_path) }}" class="w-full h-auto object-cover">
                 </div>
             @endif
             <h1 class="font-bold text-4xl">{{ $idea->title }}</h1>
@@ -77,7 +94,7 @@
                 </x-status-label>
 
                 <div class="text-muted-foreground text-sm mt-2">
-                   {{  $idea->created_at->diffForHumans() }}
+                    {{ $idea->created_at->diffForHumans() }}
                 </div>
             </div>
 
@@ -101,11 +118,14 @@
                                     @method('PATCH')
 
                                     <div class="flex items-center gap-x-3">
-                                        <button type="submit" role="checkbox" class="size-5 flex items-center justify-center rounded-lg text-primary-foreground {{ $step->completed ? 'bg-primary' : 'border border-primary' }}">&check;</button>
-                                        <span class="{{ $step->completed ? 'line-through text-muted-foreground' : '' }}">{{ $step->description }}</span>
+                                        <button type="submit" role="checkbox"
+                                            class="size-5 flex items-center justify-center rounded-lg text-primary-foreground {{ $step->completed ? 'bg-primary' : 'border border-primary' }}">&check;</button>
+                                        <span
+                                            class="{{ $step->completed ? 'line-through text-muted-foreground' : '' }}">{{ $step->description }}</span>
 
                                         @if ($step->completed_at)
-                                            <span class="ml-auto shrink-0 text-sm text-muted-foreground">{{ $step->completed_at->diffForHumans() }}</span>
+                                            <span
+                                                class="ml-auto shrink-0 text-sm text-muted-foreground">{{ $step->completed_at->diffForHumans() }}</span>
                                         @endif
                                     </div>
                                 </form>
@@ -131,6 +151,6 @@
             @endif
         </div>
 
-        <x-idea.modal :idea="$idea"/>
+        <x-idea.modal :idea="$idea" />
     </div>
 </x-layout>

@@ -7,6 +7,8 @@ use App\Http\Controllers\IdeaImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\ShareIdeaController;
+use App\Http\Controllers\ShowSharedIdeaController;
 use App\Http\Controllers\StepController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +26,8 @@ Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('ideas.up
 
 Route::delete('/ideas/{idea}/image', [IdeaImageController::class, 'destroy'])->name('ideas.image.destroy')->middleware('auth');
 
-Route::post('/ideas/{idea}/code', [IdeaController::class, 'generateShareCode'])->name('ideas.code.store')->middleware('auth');
+Route::post('/ideas/{idea}/code', ShareIdeaController::class)->name('ideas.code.store')->middleware('auth');
+Route::get('/ideas/preview/{code}', ShowSharedIdeaController::class)->name('ideas.share.show');
 
 Route::patch('/steps/{step}', [StepController::class, 'update'])->name('steps.update')->middleware('auth');
 
