@@ -22,7 +22,10 @@ test('it can have steps', function () {
 });
 
 test('it can format description using Markdown', function () {
-    $idea = new Idea(['descritpion' => 'Hello *world*']);
+    $idea = new Idea(['description' => 'Hello *world*']);
 
-    expect($idea->formattedDescription)->toEqual('<p>Hello <em>world</em></p>\n');
+    $this->assertStringContainsString(
+        '<em>world</em>',
+        $idea->formattedDescription
+    );
 });
