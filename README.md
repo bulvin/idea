@@ -52,7 +52,7 @@
 
 ### Requirements
 
-- PHP 8.5+
+- PHP 8.3+
 - Composer
 - Node.js & npm
 - Database SQLite
@@ -62,28 +62,12 @@
 ### Installation
 
 ```bash
-# clone repo
 git clone https://github.com/bulvin/idea.git
 
 cd idea
 
-# install backend deps
-composer install
+composer run setup
 
-# install frontend deps
-npm install
-
-# env
-cp .env.example .env
-php artisan key:generate
-
-# run migrations
-php artisan migrate
-
-# build assets
-npm run build
-
-# start server
 php artisan serve
 ```
 
