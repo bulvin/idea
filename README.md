@@ -18,6 +18,7 @@
 - Create, update, delete ideas
 - View single idea
 - Filter ideas list
+- Support formatting using markdown
 
 ###  Steps System
 - Add structured steps to each idea
