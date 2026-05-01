@@ -10,7 +10,7 @@
 
 **Idea** is a web application that allows you to create, organize, and share your ideas in a structured way.
 
-Visit app here: [Ideas](idea-bulvinkel.on-forge.com)
+Visit app here: [idea-bulvinkel.on-forge.com](https://idea-bulvinkel.on-forge.com)
 ---
 
 ##  Features
