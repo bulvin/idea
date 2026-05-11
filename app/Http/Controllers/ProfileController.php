@@ -15,8 +15,8 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        return view('profile.edit', [
-            'user' => Auth::user(),
+        return view("profile.edit", [
+            "user" => Auth::user(),
         ]);
     }
 
@@ -25,27 +25,33 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required', 'string', 'email', 'max:255',
-                Rule::unique('users', 'email')->ignore($user->id),
+            "name" => ["required", "string", "max:255"],
+            "email" => [
+                "required",
+                "string",
+                "email",
+                "max:255",
+                Rule::unique("users", "email")->ignore($user->id),
             ],
-            'password' => ['nullable', Password::defaults()],
+            "password" => ["nullable", Password::defaults()],
         ]);
 
         $originalEmail = $user->email;
 
         $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password ?? $user->password,
+            "name" => $request->name,
+            "email" => $request->email,
+            "password" => $request->password ?? $user->password,
         ]);
 
         if ($originalEmail !== $request->email) {
-            Notification::route('mail', $originalEmail)
-                ->notify(new EmailChanged($user, $originalEmail));
+            Notification::route("mail", $originalEmail)->notify(
+                new EmailChanged($user, $originalEmail),
+            );
         }
 
-        return redirect()->route('profile.edit')->with('success', 'Profile updated!');
+        return redirect()
+            ->route("profile.edit")
+            ->with("success", "Profile updated!");
     }
 }

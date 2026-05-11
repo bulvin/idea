@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\IdeaStatus;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,27 +21,30 @@ class Idea extends Model
     use HasFactory;
 
     protected $casts = [
-        'links' => AsArrayObject::class,
-        'status' => IdeaStatus::class,
-        'share_code_expires_at' => 'datetime',
+        "links" => AsArrayObject::class,
+        "status" => IdeaStatus::class,
+        "share_code_expires_at" => "datetime",
     ];
 
     protected $attributes = [
-        'status' => IdeaStatus::PENDING->value,
+        "status" => IdeaStatus::PENDING->value,
     ];
 
     public static function statusCounts(User $user): Collection
     {
-        $counts = $user->ideas()
-            ->selectRaw('status, count(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status');
+        $counts = $user
+            ->ideas()
+            ->selectRaw("status, count(*) as count")
+            ->groupBy("status")
+            ->pluck("count", "status");
 
         return collect(IdeaStatus::cases())
-            ->mapWithKeys(fn ($status) => [
-                $status->value => $counts->get($status->value, 0),
-            ])
-            ->put('all', $user->ideas()->count());
+            ->mapWithKeys(
+                fn($status) => [
+                    $status->value => $counts->get($status->value, 0),
+                ],
+            )
+            ->put("all", $user->ideas()->count());
     }
 
     public function user(): BelongsTo
@@ -53,29 +57,35 @@ class Idea extends Model
         return $this->hasMany(Step::class);
     }
 
+    public function histories(): HasMany
+    {
+        return $this->hasMany(IdeaHistory::class);
+    }
+
     public function formattedDescription(): Attribute
     {
         return Attribute::get(
-            fn ($value, $attributes) => new HtmlString(str($attributes['description'])->markdown([
-                'html_input' => 'escape',
-                'allow_unsafe_links' => false,
-                'max_nesting_level' => 5,
-            ])));
+            fn($value, $attributes) => new HtmlString(
+                str($attributes["description"])->markdown([
+                    "html_input" => "escape",
+                    "allow_unsafe_links" => false,
+                    "max_nesting_level" => 5,
+                ]),
+            ),
+        );
     }
 
     public function shareLink(): Attribute
     {
-        return Attribute::get(fn (): ?string => $this->share_code
-            ? route('ideas.share.show', ['code' => $this->share_code])
-            : null);
+        return Attribute::get(
+            fn(): ?string => $this->share_code
+                ? route("ideas.share.show", ["code" => $this->share_code])
+                : null,
+        );
     }
 
     public function isShareCodeExpired(): bool
     {
-        if (! $this->share_code) {
-            return true;
-        }
-
-        return $this->share_code_expires_at?->isPast() ?? false;
+        return $this->share_code && $this->share_code_expires_at->isPast();
     }
 }

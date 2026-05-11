@@ -24,13 +24,16 @@ class IdeaController extends Controller
 
         $ideas = $user
             ->ideas()
-            ->when(in_array($request->status, IdeaStatus::values()), fn ($query) => $query->where('status', $request->status))
+            ->when(
+                in_array($request->status, IdeaStatus::values()),
+                fn($query) => $query->where("status", $request->status),
+            )
             ->latest()
             ->get();
 
-        return view('ideas.index', [
-            'ideas' => $ideas,
-            'statusCounts' => Idea::statusCounts($user),
+        return view("ideas.index", [
+            "ideas" => $ideas,
+            "statusCounts" => Idea::statusCounts($user),
         ]);
     }
 
@@ -49,8 +52,10 @@ class IdeaController extends Controller
     {
         $action->create($request->safe()->all());
 
-        return to_route('ideas.index')
-            ->with('success', 'Idea has been created!');
+        return to_route("ideas.index")->with(
+            "success",
+            "Idea has been created!",
+        );
     }
 
     /**
@@ -58,10 +63,10 @@ class IdeaController extends Controller
      */
     public function show(Idea $idea)
     {
-        Gate::authorize('workWith', $idea);
+        Gate::authorize("workWith", $idea);
 
-        return view('ideas.show', [
-            'idea' => $idea,
+        return view("ideas.show", [
+            "idea" => $idea,
         ]);
     }
 
@@ -70,7 +75,7 @@ class IdeaController extends Controller
      */
     public function edit(Idea $idea): void
     {
-        Gate::authorize('workWith', $idea);
+        Gate::authorize("workWith", $idea);
     }
 
     /**
@@ -78,11 +83,11 @@ class IdeaController extends Controller
      */
     public function update(IdeaRequest $request, Idea $idea, UpdateIdea $action)
     {
-        Gate::authorize('workWith', $idea);
+        Gate::authorize("workWith", $idea);
 
         $action->update($request->safe()->all(), $idea);
 
-        return back()->with('success', 'Idea updated!');
+        return back()->with("success", "Idea updated!");
     }
 
     /**
@@ -90,10 +95,10 @@ class IdeaController extends Controller
      */
     public function destroy(Idea $idea)
     {
-        Gate::authorize('workWith', $idea);
+        Gate::authorize("workWith", $idea);
 
         $idea->delete();
 
-        return to_route('ideas.index');
+        return to_route("ideas.index");
     }
 }
