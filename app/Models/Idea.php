@@ -79,7 +79,7 @@ class Idea extends Model
     {
         return Attribute::get(
             fn(): ?string => $this->share_code
-                ? route("ideas.share.show", ["code" => $this->share_code])
+                ? route("ideas.shared.show", ["code" => $this->share_code])
                 : null,
         );
     }

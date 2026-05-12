@@ -13,12 +13,11 @@ class StepController extends Controller
      */
     public function update(Step $step)
     {
-        $completed = ! $step->completed;
-        $completed_at = $step->completed_at ?? now();
+        $completed = !$step->completed;
 
         $step->update([
-            'completed' => $completed,
-            'completed_at' => $completed ? $completed_at : null,
+            "completed" => $completed,
+            "completed_at" => $completed ? $step->completed_at ?? now() : null,
         ]);
 
         return back();

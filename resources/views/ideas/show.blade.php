@@ -28,7 +28,7 @@
                         },
                     }" class="relative">
                         <div class="flex items-center gap-2">
-                            <form method="POST" action="{{ route('ideas.code.store', $idea) }}">
+                            <form method="POST" action="{{ route('ideas.share', $idea) }}">
                                 @csrf
                                 <button type="submit" class="btn btn-outlined">
                                     {{ $idea->share_code ? 'Rotate link' : 'Share' }}

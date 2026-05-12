@@ -12,32 +12,59 @@ use App\Http\Controllers\ShowSharedIdeaController;
 use App\Http\Controllers\StepController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/ideas');
+Route::redirect("/", "/ideas");
 
-Route::get('/ideas', [IdeaController::class, 'index'])->name('ideas.index')->middleware('auth');
-Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store')->middleware('auth');
-Route::get('/ideas/{idea}', [IdeaController::class, 'show'])
-    ->name('ideas.show')
-    ->middleware('auth');
+Route::get("/ideas/preview/{code}", ShowSharedIdeaController::class)->name(
+    "ideas.shared.show",
+);
 
-Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('ideas.destroy')->middleware('auth');
+Route::middleware("guest")->group(function () {
+    Route::get("/register", [RegisteredUserController::class, "create"]);
+    Route::post("/register", [RegisteredUserController::class, "store"]);
 
-Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('ideas.update')->middleware('auth');
+    Route::get("/login", [SessionsController::class, "create"])->name("login");
+    Route::post("/login", [SessionsController::class, "store"]);
+});
 
-Route::delete('/ideas/{idea}/image', [IdeaImageController::class, 'destroy'])->name('ideas.image.destroy')->middleware('auth');
+Route::middleware("auth")->group(function () {
+    Route::get("/ideas", [IdeaController::class, "index"])->name("ideas.index");
 
-Route::post('/ideas/{idea}/code', ShareIdeaController::class)->name('ideas.code.store')->middleware('auth');
-Route::get('/ideas/preview/{code}', ShowSharedIdeaController::class)->name('ideas.share.show');
+    Route::post("/ideas", [IdeaController::class, "store"])->name(
+        "ideas.store",
+    );
 
-Route::patch('/steps/{step}', [StepController::class, 'update'])->name('steps.update')->middleware('auth');
+    Route::get("/ideas/{idea}", [IdeaController::class, "show"])->name(
+        "ideas.show",
+    );
 
-Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest');
-Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
+    Route::patch("/ideas/{idea}", [IdeaController::class, "update"])->name(
+        "ideas.update",
+    );
 
-Route::get('/login', [SessionsController::class, 'create'])->name('login')->middleware('guest');
-Route::post('/login', [SessionsController::class, 'store'])->middleware('guest');
+    Route::delete("/ideas/{idea}", [IdeaController::class, "destroy"])->name(
+        "ideas.destroy",
+    );
 
-Route::post('/logout', [SessionsController::class, 'destroy'])->middleware('auth');
+    Route::delete("/ideas/{idea}/image", [
+        IdeaImageController::class,
+        "destroy",
+    ])->name("ideas.image.destroy");
 
-Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
-Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+    Route::post("/ideas/{idea}/code", ShareIdeaController::class)->name(
+        "ideas.share",
+    );
+
+    Route::patch("/steps/{step}", [StepController::class, "update"])->name(
+        "steps.update",
+    );
+
+    Route::post("/logout", [SessionsController::class, "destroy"]);
+
+    Route::get("/profile", [ProfileController::class, "edit"])->name(
+        "profile.edit",
+    );
+
+    Route::patch("/profile", [ProfileController::class, "update"])->name(
+        "profile.update",
+    );
+});
