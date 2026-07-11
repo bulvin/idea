@@ -54,7 +54,7 @@ Visit app here: [idea-bulvinkel.on-forge.com](https://idea-bulvinkel.on-forge.co
 
 ### Requirements
 
-- PHP 8.3+
+- PHP 8.5+
 - Composer
 - Node.js & npm
 - Database SQLite
